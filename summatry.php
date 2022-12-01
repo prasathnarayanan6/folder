@@ -14,9 +14,7 @@ if(isset($_GET['id'])){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payslip View</title>
-	<script src="js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
 		<div class="container-fluid " >
@@ -38,7 +36,6 @@ if(isset($_GET['id'])){
 							</div>
 						</div>
 						<hr>
-						<div class="table-responsive">
 						<table id="table" class="table table-bordered table-striped">
 							<thead>
 								<tr>
@@ -59,34 +56,29 @@ if(isset($_GET['id'])){
 									
 									if(isset($_GET['id'])){
 										$id = $_GET['id'];
-									$sql= "select * from deduction where emp_id='$id'";
+									$sql= "select s.desig, s.salary,d.date,d.deduction from salary s, deduction d where e.emp_id='$id' AND e.emp_id = s.emp_id AND e.emp_id = d.emp_id";
 									$query=mysqli_query($conn, $sql);
-$i =0;			
+$i =0;
 									//$query=mysqli_query($conn, "select * from salary where emp_id='$id'");
 									//$payroll="SELECT * FROM emp WHERE emp_id='$id'";
 									//$result=$conn->query($payroll);
 									while($row=mysqli_fetch_array($query)){
-										//echo $i=$i+1;
-
+										echo $i=$i+1;
 								?>
 							
 								<tr>
 									
 									<td><?php echo $row['date'] ?></td>
 									<td><?php echo $row['emp_id'] ?></td>
-									<td><?php echo $row['designation'] ?></td>
+									<td><?php echo $row['desig'] ?></td>
 									<td><?php echo $row['salary'] ?></td>
-									<td><?php echo $row['deduction']?></td>
-									<td><?php echo $row['salary'] - $row['deduction']?></td>
-
 									<!--<td><?php// echo $row[''] ?></td>
 									<td><?php //echo $row['phone'] ?></td>-->
-									<!--<td>T</td>
-									<td>T</td>-->
+									<td><?php echo number_format($row['deduction'],2) ?></td>
+									<td><?php echo number_format($row['salary']-$row['deduction'],2) ?></td>
 									<td>
 										<center>
-											<a href="payslip.php?id=<?php echo $row['emp_id']?> && date=<?php echo $row['date']?>" class="btn btn-primary">view</a>
-											<input type="submit" name="submit" clas="btn btn-danger" value="Delete">
+											<a href="payslip.php?id=<?php echo $row['emp_id']?> && date=<?php echo $row['date']?>" class="btn btn-primary">view</a.
 										</center>
 									</td>
 								</tr>
@@ -95,7 +87,6 @@ $i =0;
 								?>
 							</tbody>
 						</table>
-						</div>
 					</div>
 				</div>
 			</div>

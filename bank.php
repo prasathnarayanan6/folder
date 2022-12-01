@@ -1,4 +1,4 @@
-<?php 
+<?php
 require "connection.php";
 ?>
 <?php 
@@ -15,18 +15,18 @@ if(!isset($_SESSION['EmpID']) && !isset($_SESSION['password'])){
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR | Dashboard</title>
     <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet"/>
     <script src="js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">   -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-</head>
-<body>
-<style>
+
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
+    <title>deduction</title>
+    <style>
         /* Google Fonts - Poppins */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
@@ -153,7 +153,19 @@ nav.open ~ .overlay {
 </nav>
 </div>
 
-<!----payroll------------------------------------------------------------------------------------------------->
+   <!-- <div class="card">
+        <div class="card-body">
+                <table id="table" class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th>Employee ID</th>
+									<th>Deduction</th>
+								</tr>
+							</thead>
+                </table>
+        </div>
+    </div>-->
+    <!----payroll------------------------------------------------------------------------------------------------->
 <div class="wrapper container">
   <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background: #222d32;">
 
@@ -179,23 +191,22 @@ nav.open ~ .overlay {
         <div class="col-12">
           <div class="card">
           <div class="card-header">
-						    <span><b>Payroll : <?php //echo $pay['ref_no'] ?></b></span>
-							<a href="deduction.php?id=" class="btn btn-primary btn-sm btn-block col-md-2 float-right" type="button">Add Deduction</a>
-					</div>  
-            <div class="box-header with-border">
+				<span><b>Deduction : <?php //echo $pay['ref_no'] ?></b></span>
+            </div>  
+            <!--<div class="box-header with-border">
               <div align="right" style="float: right;"><br>
                 <form  method="POST">
                 <div class="input-group">
-                 <!-- <input type="date" name="startmonth" class="form-control"> &nbsp;
+                  <input type="date" name="startmonth" class="form-control"> &nbsp;
                   <span class="input-group-text">
-                    TO
-                  </span> &nbsp;-->
-                  <!--<input type="date" name="endmonth" class="form-control"> &nbsp;-->
-                  <button class="btn btn-primary btn-sm btn-flat" name="apply_date"><i class="fa fa-check"></i>Generate payroll</button>&nbsp;
+                    To
+                  </span> &nbsp;
+                  <input type="date" name="endmonth" class="form-control"> &nbsp;
+                  <button class="btn btn-dark btn-sm btn-flat" name="apply_date"><i class="fa fa-check"></i> Apply Date</button>&nbsp;
                 </div>
                 </form>
               </div>
-            </div>
+            </div>-->
             <hr>
             <div class="card-body table-responsive">
 
@@ -203,13 +214,13 @@ nav.open ~ .overlay {
                 <thead>
                 <tr>
                   <th>Employee ID</th>
-                  <th>Employee Name</th>
-                  <th>Employee Mail</th>
-                  <th>Joining Date</th>
-                  <th>Phone</th>
-                  <!--<th>Designation</th>
-                  <th>salary</th>-->
-                  <th width="12%">Payslip</th>
+                  <th>Bank name</th>
+                  <th>Account Number </th>
+                  <th>IFSC</th>
+                  <th>Branch</th>
+                  <!--<th>Total Deduction</th>-->
+                 <!-- <th>salary</th>-->
+                  <th width="12%">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -220,35 +231,50 @@ nav.open ~ .overlay {
 
                 $s = $_SESSION['start_month'];
                 $e = $_SESSION['end_month'];
+                if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    $empid = $_POST['emp_id'];
+                    $bname = $_POST['bname'];
+                    $bno = $_POST['bno'];
+                    $ifsc = $_POST['ifsc'];
+                    $bb = $_POST['bb'];
+                   // $ded = $epf + $pt + $hi + $tds;
+                    //$deduction = $_POST['ded'];
+                    $sql = "insert into bank(emp_id,bname,bno,ifsc,bbranch) values('$empid', '$bname', '$bno', '$ifsc', '$bb')";
+                    $result = mysqli_query($conn, $sql);
+                    if($result){
+                        echo "<div class='alert alert-success'>
+                        Data inserted successfully;
+                        </div>";
+                    }
+                }
+
                 //$sql= "select e.*,s.desig, s.salary from emp e , salary s where e.emp_id=s.emp_id";
-                //$sql ="select * from "
-                $sql = "SELECT * FROM emp";
-                $result = mysqli_query($conn, $sql);
+
+                //$sql = "SELECT * FROM emp";
+                //$result = mysqli_query($conn, $sql);
                 //$result = mysqli_query($db, $sql);
-                while($row = mysqli_fetch_array($result))
-                {
+                //while($row = mysqli_fetch_array($result))
+                //{
                 ?>
                 <tr>
-                  <td><?php echo $row['emp_id']; ?></td>
-                  <td><?php echo $row['name'] ?></td>
-                  <td><?php echo $row['email'] ?></td>
-                  <td><?php echo $row['jdate'] ?></td>
-                  <td><?php echo $row['phone'] ?></td>
-                  <!--<td><?php //echo $row['desig'] ?></td>
-                  <td><?php //echo $row['salary'] ?></td>-->
+                <form method="POST" enctype="multipart/form-data">
+                  <td><input type="text" class="form-control" name="emp_id"></td>
+                  <td><input type="text" class="form-control" name="bname"></td>
+                  <td><input type="text" class="form-control" name="bno"></td>
+                  <td><input type="text" class="form-control" name="ifsc"></td>
+                  <td><input type="text" class="form-control" name="bb"></td>
+                  <!--<td><input type="text" class="form-control" name="ded"></td>-->
                   <td>
-                    <!--<form method="POST" action="viewpayslip.php">-->
-                    <a href="viewpayslip.php?id=<?php echo $row['emp_id']?>" class="btn btn-primary">View</a>
-                     <!-- <button type="submit" value="payslip['<?php //echo $row['emp_id']; ?>']" class="btn btn-dark btn-sm" name="payslip['<?php //echo $row['emp_id']; ?>']"><i class="fas fa-print"></i> Payslip</button>-->
-                    <!--</form>-->
+                    <!--<a href="viewpayslip.php?id=<?php //echo $row['emp_id']?>" class="btn btn-primary">Add</a>-->
+                     <button type="submit" class="btn btn-dark btn-sm" name="submit"><i class="fas fa-print"></i>Add Bank</button>
                   </td>
+                </form>
                 </tr>
                 <?php
-                }
+                //}
                 ?>
                 </tbody>
               </table>
-              <button id="btnExport" class="btn btn-primary" onclick="ExportToExcel('xlsx')">EXPORT REPORT</button>
             </div>
           </div>
         </div>
@@ -256,27 +282,5 @@ nav.open ~ .overlay {
     </section>
   </div>
 </div>
-<script>
-function ExportToExcel(type, fn, dl) {
-       var elt = document.getElementById('example1');
-       var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
-       return dl ?
-         XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
-         XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
-    }
-</script>
-</body>
-</html>
-
-    <!-----end of payrolll---------------------------------------------------------------------------------------->
-
-   <!--- <script>  
-
-      //overlay.addEventListener("click", () => {
-        //navBar.classList.remove("open");
-      //});
-    </script>
-
-    
 </body>
 </html>

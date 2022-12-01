@@ -16,9 +16,11 @@ if(!isset($_SESSION['EmpID']) && !isset($_SESSION['password'])){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css" />
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Boxicons CSS -->
     <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
     <title>Admin view</title>
     <style>
         /* Google Fonts - Poppins */
@@ -157,15 +159,15 @@ nav.open ~ .overlay {
               </a>
             </li>
             <li class="list">
-              <a href="#" class="nav-link">
-                <i class="bx bx-bell icon"></i>
-                <span class="link">Notifications</span>
+              <a href="bank.php" class="nav-link">
+                <i class="bx bxs-bank icon"></i>
+                <span class="link">bank</span>
               </a>
             </li>
             <li class="list">
-              <a href="#" class="nav-link">
+              <a href="salary.php" class="nav-link">
                 <i class="bx bx-message-rounded icon"></i>
-                <span class="link">Messages</span>
+                <span class="link">Salary</span>
               </a>
             </li>
             <li class="list">

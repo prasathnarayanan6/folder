@@ -1,34 +1,48 @@
 <?php
+//============================================================+
+// File name   : example_005.php
+// Begin       : 2008-03-04
+// Last Update : 2013-05-14
+//
+// Description : Example 005 for TCPDF class
+//               Multicell
+//
+// Author: Nicola Asuni
+//
+// (c) Copyright:
+//               Nicola Asuni
+//               Tecnick.com LTD
+//               www.tecnick.com
+//               info@tecnick.com
+//============================================================+
+
 /**
- * Created by PhpStorm
- * Designed by Makmesh iKiev
- * <ikiev@makmesh.com>
- * Copyright �2015
- * All Rights Reserved
- * Date: 24/12/2015
- * Time: 12:37 AM
- *
- * Package Name: Makmesh Payroll (Kenya)
- * File Name: payslip.php
- *
+ * Creates an example PDF TEST document using TCPDF
+ * @package com.tecnick.tcpdf
+ * @abstract TCPDF - Example: Multicell
+ * @author Nicola Asuni
+ * @since 2008-03-04
  */
 
-session_start();
-require "connection.php";
-if(!isset($_SESSION['EmpID']) && !isset($_SESSION['password'])){
-    header('location:admin.php');
-	  die();
-}	//header('location:admin_login.php');
-
+// Include the main TCPDF library (search for installation path).
 require_once('tcpdf/tcpdf.php');
-$pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+// create new PDF document
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor(PDF_AUTHOR);
+$pdf->SetAuthor('Nicola Asuni');
+$pdf->SetTitle('TCPDF Example 005');
+$pdf->SetSubject('TCPDF Tutorial');
+$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
-$pdf->setPrintFooter(false);
-$pdf->setPrintHeader(false);
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 005', PDF_HEADER_STRING);
+
+// set header and footer fonts
+$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -39,194 +53,108 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, 10);
+$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-
-$pdf->setFontSubsetting(true);
-$pdf->SetFont('', 'B', 16, '', true);
-
-$obj = new Employee();
-$company = $obj->get_company();
-$pdf->SetTitle($company->name . ' - Payslip');
-
-/**********************************************************************************************************************/
-
-
-$month = (int)$_GET['m'];
-$year = (int)$_GET['y'];
-
-$employees = $obj->get_employees();
-$other = $obj->other_deductions($year, $month);
-foreach ($employees as $employee) {
-    $id = $employee->id;
-    $basic = $employee->basic_pay;
-    $pdf->AddPage();
-    $pdf->setColor('fill', 220, 220, 220);
-    $pdf->Cell(130, 0, 'SALARY VOUCHER', 0, 1, 'C', true);
-    $pdf->SetFont('', 'B', 10);
-    $pdf->Ln(9);
-
-    $pdf->Rect(15, 40, 130, 150);
-
-    $dateObj = DateTime::createFromFormat("!m", $month);
-    $pdf->Cell(50, 0, $company->name);
-    $pdf->Cell(40, 0, "Month of Pay:");
-    $pdf->SetFont('');
-    $pdf->Cell(40, 0, $monthName = $dateObj->format('F'));
-    $pdf->SetFont('', 'B');
-    $pdf->Ln(10);
-
-    $pdf->Cell(15, 0, "Name:");
-    $pdf->SetFont('');
-    $pdf->Cell(35, 0, $employee->fname[0] . "." . $employee->mname[0] . ". " . $employee->lname);
-    $pdf->SetFont('', 'B');
-    $pdf->Cell(40, 0, "Date Paid:");
-    $pdf->SetFont('');
-    $pdf->Cell(40, 0, date("d-M-Y"));
-    $pdf->Ln(6);
-
-    $pdf->SetFont('', 'B');
-    $pdf->Cell(15, 0, "PIN:");
-    $pdf->SetFont('');
-    $pdf->Cell(35, 0, $employee->pin);
-    $pdf->Ln(6);
-    $pdf->SetFont('', 'B');
-    $pdf->Cell(15, 0, "ID:");
-    $pdf->SetFont('');
-    $pdf->Cell(35, 0, $employee->national_id, 0, 1);
-    $pdf->Cell(130, 0, "", "T");
-    $pdf->Ln(0.5);
-
-    $w = 50;
-    $w2 = 50;
-    $w3 = 30;
-
-    $pdf->Cell($w, 0, "EARNINGS");
-    $pdf->Cell($w2, 0, "");
-    $pdf->Cell($w3, 0, "KSH", 0, 1, "R", true);
-
-    $pdf->SetFont('');
-    $pdf->Cell($w, 5, "BASIC PAY");
-    $pdf->Cell($w2, 5, "");
-    $pdf->Cell($w3, 5, number_format($basic, 2), 0, 1, "R", true);
-
-    $allowances = $obj->list_allowances($id, $month, $year);
-    $gross = $basic;
-    if ($allowances)
-        foreach ($allowances as $allowance) {
-            $gross += $allowance->amount;
-            $pdf->Cell($w, 5, $allowance->allowance);
-            $pdf->Cell($w2, 5, "");
-            $pdf->Cell($w3, 5, number_format($allowance->amount, 2), 0, 1, "R", true);
-        }
-
-    $pdf->Cell(130, 0, "", "T");
-    $pdf->Ln(0.5);
-
-    $pdf->SetFont('', 'B');
-    $pdf->Cell($w, 0, "GROSS PAY");
-    $pdf->Cell($w2, 0, "");
-    $pdf->Cell($w3, 0, number_format($gross, 2), 0, 1, "R", true);
-
-    $pdf->Cell(130, 0, "", "T");
-    $pdf->Ln(0.5);
-
-    $h = 6;
-    $pdf->Cell($w, $h, "DEDUCTIONS");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, "", 0, 1, "R", true);
-
-    $pdf->SetFont('');
-
-    $paye = $obj->get_tax($gross);
-    $totalDeduction = $paye;
-
-    $pdf->Cell($w, $h, "P.A.Y.E");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, "(" . number_format($paye, 2) . ")", 0, 1, "R", true);
-
-    $deductions = $obj->get_deductions();
-
-    $nssf = $deductions[1]->value;
-    $totalDeduction += $nssf;
-    $pdf->Cell($w, $h, "N.S.S.F");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, "(" . number_format($nssf, 2) . ")", 0, 1, "R", true);
-
-    $nhif = $obj->nhif_value($basic);
-    if ($basic > 100000)
-        $nhif = 1700;
-    $totalDeduction += $nhif;
-    $pdf->Cell($w, $h, "N.H.I.F");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, "(" . number_format($nhif / 1, 2) . ")", 0, 1, "R", true);
-
-    $ad = $obj->monthly_payroll('Advances', $id, $month, $year);
-    $advances = "";
-    if ($ad) $advances = "(" . number_format($ad / 1, 2) . ")";
-    $pdf->Cell($w, $h, "ADVANCES");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, $advances, 0, 1, "R", true);
-
-    $lp = "";
-    $loan = $obj->monthly_payroll('Loan Repayment', $id, $month, $year);
-    if ($loan)
-        $lp = "(" . number_format($loan / 1, 2) . ")";
-    $pdf->Cell($w, $h, "LOAN REPAYMENT");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, $lp, 0, 1, "R", true);
-
-    $pension = $deductions[5]->value * $basic;
-    $totalDeduction += $pension;
-    $pdf->Cell($w, $h, "PENSION PLAN (5%)");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, "(" . number_format($pension, 2) . ")", 0, 1, "R", true);
-
-    $he = "";
-    $helb = $obj->monthly_payroll('HELB', $id, $month, $year);
-    if ($helb)
-        $he = "(" . number_format($helb / 1, 2) . ")";
-    $pdf->Cell($w, $h, "HELB");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h, $he, 0, 1, "R", true);
-
-    $relief = $deductions[0]->value;
-    $totalDeduction -= $relief;
-    $pdf->Cell($w, $h, "MONTHLY RELIEF");
-    $pdf->Cell($w2, $h, "");
-    $pdf->Cell($w3, $h,  number_format($relief, 2), 0, 1, "R", true);
-
-    if ($other)
-        foreach ($other as $oth)
-            if ($id == $oth->employee_id) {
-                $pdf->Cell($w, $h, strtoupper($oth->item));
-                $pdf->Cell($w2, $h, "");
-                $pdf->Cell($w3, $h, "(" . number_format($oth->value, 2) . ")", 0, 1, "R", true);
-            }
-
-    $pdf->Cell(130, 0, "", "T");
-    $pdf->Ln(0.5);
-
-    $totalDeduction += $obj->sum_payroll($id, $month, $year);
-
-    $pdf->SetFont('', 'B');
-    $pdf->Cell($w, $h, "TOTAL DEDUCTIONS", "B");
-    $pdf->Cell($w2, $h, "", "B");
-    $pdf->Cell($w3, $h, "(" . number_format($totalDeduction, 2) . ")", "B", 1, "R", true);
-
-    $pdf->Cell($w, $h, "NET PAY", "B");
-    $pdf->Cell($w2, $h, "", "B");
-    $np = $gross - $totalDeduction;
-    $pdf->Cell($w3, $h, number_format($np, 2), "B", 1, "R", true);
-
-
-    $pdf->Cell($w, $h, "TOTAL POSTED", "B");
-    $pdf->Cell($w2, $h, "", "B");
-    $pdf->Cell($w3, $h, number_format(($np) / 1, 2), "B", 1, "R", true);
+// set some language-dependent strings (optional)
+if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+    require_once(dirname(__FILE__).'/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
+// ---------------------------------------------------------
 
-$pdf->Output("Payslip.pdf");
+// set font
+$pdf->SetFont('times', '', 10);
+
+// add a page
+$pdf->AddPage();
+
+// set cell padding
+$pdf->setCellPaddings(1, 1, 1, 1);
+
+// set cell margins
+$pdf->setCellMargins(1, 1, 1, 1);
+
+// set color for background
+$pdf->SetFillColor(255, 255, 127);
+
+// MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+
+// set some text for example
+$txt = 'Name';
+
+// // Multicell test
+// $pdf->MultiCell(55, 5, '[LEFT] '.$txt, 1, 'L', 1, 0, '', '', true);
+// $pdf->MultiCell(55, 5, '[RIGHT] '.$txt, 1, 'R', 0, 1, '', '', true);
+// $pdf->MultiCell(55, 5, '[CENTER] '.$txt, 1, 'C', 0, 0, '', '', true);
+// $pdf->MultiCell(55, 5, '[JUSTIFY] '.$txt."\n", 1, 'J', 1, 2, '' ,'', true);
+// $pdf->MultiCell(55, 5, '[DEFAULT] '.$txt, 1, '', 0, 1, '', '', true);
+
+// $pdf->Ln(4);
+
+// set color for background
+$pdf->SetFillColor(255, 255, 255);
+
+// Vertical alignment
+$pdf->MultiCell(44, 5, ''.$txt, 1, 'J', 1, 0, '', '', true, 0, false, true, 12, 'T');
+$pdf->MultiCell(44, 5, ''.$txt, 1, 'J', 1, 0, '', '', true, 0, false, true, 12, 'T');
+$pdf->MultiCell(44, 5, ''.$txt, 1, 'J', 1, 0, '', '', true, 0, false, true, 12, 'T');
+$pdf->MultiCell(44, 5, ''.$txt, 1, 'J', 1, 0, '', '', true, 0, false, true, 12, 'T');
+
+
+$pdf->Ln(4);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// // set color for background
+// $pdf->SetFillColor(215, 235, 255);
+
+// // set some text for example
+// $txt = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdiet lectus. Phasellus quis velit velit, non condimentum quam. Sed neque urna, ultrices ac volutpat vel, laoreet vitae augue. Sed vel velit erat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras eget velit nulla, eu sagittis elit. Nunc ac arcu est, in lobortis tellus. Praesent condimentum rhoncus sodales. In hac habitasse platea dictumst. Proin porta eros pharetra enim tincidunt dignissim nec vel dolor. Cras sapien elit, ornare ac dignissim eu, ultricies ac eros. Maecenas augue magna, ultrices a congue in, mollis eu nulla. Nunc venenatis massa at est eleifend faucibus. Vivamus sed risus lectus, nec interdum nunc.
+
+// Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi, id vehicula quam laoreet elementum. Phasellus egestas interdum erat, et viverra ipsum ultricies ac. Praesent sagittis augue at augue volutpat eleifend. Cras nec orci neque. Mauris bibendum posuere blandit. Donec feugiat mollis dui sit amet pellentesque. Sed a enim justo. Donec tincidunt, nisl eget elementum aliquam, odio ipsum ultrices quam, eu porttitor ligula urna at lorem. Donec varius, eros et convallis laoreet, ligula tellus consequat felis, ut ornare metus tellus sodales velit. Duis sed diam ante. Ut rutrum malesuada massa, vitae consectetur ipsum rhoncus sed. Suspendisse potenti. Pellentesque a congue massa.';
+
+// // print a blox of text using multicell()
+// $pdf->MultiCell(80, 5, $txt."\n", 1, 'J', 1, 1, '' ,'', true);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// AUTO-FITTING
+
+// set color for background
+$pdf->SetFillColor(255, 235, 235);
+
+// Fit text on cell by reducing font size
+$pdf->MultiCell(55, 60, '[FIT CELL] '.$txt."\n", 1, 'J', 1, 1, 125, 145, true, 0, false, true, 60, 'M', true);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// CUSTOM PADDING
+
+// set color for background
+$pdf->SetFillColor(255, 255, 215);
+
+// set font
+$pdf->SetFont('helvetica', '', 8);
+
+// set cell padding
+$pdf->setCellPaddings(2, 4, 6, 8);
+
+$txt = "CUSTOM PADDING:\nLeft=2, Top=4, Right=6, Bottom=8\nLorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdiet lectus. Phasellus quis velit velit, non condimentum quam. Sed neque urna, ultrices ac volutpat vel, laoreet vitae augue.\n";
+
+$pdf->MultiCell(55, 5, $txt, 1, 'J', 1, 2, 125, 210, true);
+
+// move pointer to last page
+$pdf->lastPage();
+
+// ---------------------------------------------------------
+
+//Close and output PDF document
+$pdf->Output('example_005.pdf', 'I');
+
+//============================================================+
+// END OF FILE
+//============================================================+

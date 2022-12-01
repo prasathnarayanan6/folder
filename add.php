@@ -26,11 +26,13 @@ if(!isset($_SESSION['EmpID']) && !isset($_SESSION['password'])){
     <meta name="viewport" content="width=, initial-scale=1.0">
     <title>Attendance</title>
     <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
+    <style> 
         /* Google Fonts - Poppins */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
@@ -231,8 +233,10 @@ nav.open ~ .overlay {
                 $hrid=$_POST['hr_id'];
                 $name=$_POST['name'];
                 $email=$_POST['email'];
-                $phone=$_POST['phno'];
                 $jdate=$_POST['jdate'];
+                $phone=$_POST['phno'];
+                $desig=$_POST['desig'];
+                $dep=$_POST['dep'];
                 //if (isset($_POST['submit']) && isset($_FILES['my_image'])) {
                   //include "connection.php";
                 
@@ -261,7 +265,7 @@ nav.open ~ .overlay {
                         move_uploaded_file($tmp_name, $img_upload_path);
                 
                         // Insert into Database
-                        $query = "insert into emp(emp_id,name,email,jdate,phone,emp_file) values('$hrid','$name','$email','$jdate','$phone','$new_img_name')";
+                        $query = "insert into emp(emp_id,name,email,jdate,phone,desig,dep,emp_file) values('$hrid', '$name', '$email', '$jdate','$phone', '$desig', '$dep', '$new_img_name')";
                         $result=$conn->query($query);
                         header("Location: attendance.php");
                         //$sql = "INSERT INTO hr_add(hr_file) 
@@ -485,6 +489,14 @@ nav.open ~ .overlay {
                  <div class="form-group mt-1">
                          <label for="exampleInputPassword1"><b>Phone</b></label>
                          <input type="number" class="form-control" id="exampleInputPassword1" placeholder="number" name="phno">
+                 </div>
+                 <div class="form-group mt-1">
+                         <label for="exampleInputPassword1"><b>Designation</b></label>
+                         <input type="text" class="form-control" id="exampleInputPassword1" placeholder="designation" name="desig">
+                 </div>
+                 <div class="form-group mt-1">
+                         <label for="exampleInputPassword1"><b>Department</b></label>
+                         <input type="text" class="form-control" id="exampleInputPassword1" placeholder="department" name="dep">
                  </div>
                  <div>
                          <label for="exampleInputPassword1"><b>Upload</b></label>
